@@ -1,0 +1,27 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+    <div>
+        <div class="container">
+            <div class="panel panel-default">
+                <div class="panel-heading">编辑靓号</div>
+                <div class="panel-body">
+                    <form class="form-group" method="post"  novalidate>  <!--把浏览器做的校验给关掉-->
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="form-group">
+                                <label>{{ field.label }}</label>
+                                {{ field }}
+                                <!--<input type="text" class="form-control" placeholder="姓名" name="user"/>-->
+                                <span style="color: red;">{{ field.errors.0 }}</span>  <!--有错误信息才执行 错误信息可能特别多[错误1，错误2……],取第一条-->
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary">提 交</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

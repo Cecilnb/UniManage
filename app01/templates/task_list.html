@@ -1,0 +1,211 @@
+{% extends 'layout.html' %}
+
+
+{% block content %}
+    <div class="container">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">表单</div>
+            <div class="panel-body">
+                <form id="formAdd" class="form-group">  <!--把浏览器做的校验给关掉-->
+                    {% csrf_token %}
+                    <div class="clearfix">
+                        {% for field in form %}
+                            <div class="col-xs-6">
+                                <div class="form-group" style="position: relative; margin-bottom: 20px;">
+                                    <label>{{ field.label }}</label>
+                                    {{ field }}
+                                    <!--<input type="text" class="form-control" placeholder="姓名" name="user"/>-->
+                                    <span class="error-msg"
+                                          style="color: red;position: absolute">{{ field.errors.0 }}</span>
+                                    <!--有错误信息才执行 错误信息可能特别多[错误1，错误2……],取第一条-->
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <div class="col-xs-12">
+                            <button id="btnAdd" type="button" class="btn btn-primary">提 交</button>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                任务列表
+            </div>
+
+            <table class="table table-bordered">
+
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>标题</th>
+                    <th>级别</th>
+                    <th>负责人</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <td>{{ obj.id }}</td>
+                        <td>{{ obj.title }}</td>
+                        <td>{{ obj.get_level_display }}</td>
+                        <td>
+                            {{ obj.user.username }}  <!--字段设置的外键关联的是父对象-->
+                        </td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="/admin/{{ obj.id }}/edit/">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/admin/{{ obj.id }}/delete/">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <ul class="pagination">
+            {{ page_string }}
+        </ul>
+
+        <div style="height: 1000px"></div>
+        <hr/>
+        <div>
+            <h1>Ajax学习</h1>
+            <h3>示例1</h3>
+            {% csrf_token %}
+            <input id="btn1" type="button" class="btn btn-primary" value="点击"/>
+
+            <h3>示例2</h3>
+            <input type="text" id="txtUser" placeholder="姓名"/>
+            <input type="text" id="txtAge" placeholder="年龄"/>
+            <input type="button" id="btn2" class="btn btn-primary" value="点击"/>
+
+            <h3>示例3</h3>
+            <form id="form3">
+                <input type="text" name="user" placeholder="姓名"/>
+                <input type="text" name="age" placeholder="年龄"/>
+                <input type="text" name="email" placeholder="邮箱"/>
+                <input type="text" name="more" placeholder="介绍"/>
+
+                <input type="button" id="btn3" class="btn btn-primary" value="点击"/>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+        $(function () {
+            // 页面框架加载完成之后代码自动执行
+            bindBtn1Event();  // 执行这个函数
+
+            bindBtn2Event();
+
+            bindBtn3Event();
+
+            bindBtnAddEvent();
+        })
+
+        function bindBtn1Event() {
+            $("#btn1").click(function () {   // 点击按钮执行
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "post",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: {
+                        n1: 123,
+                        n2: 456
+                    },
+                    dataType: "JSON",
+                    success: function (res) {   //请求成功时，接受返回的数据
+                        console.log(res);
+                        console.log(res.status);
+                        console.log(res.data);
+                    }
+                })
+            })
+        }
+
+        function bindBtn2Event() {
+            $("#btn2").click(function () {   // 点击按钮执行
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "post",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: {
+                        name: $("#txtUser").val(),
+                        age: $("#txtAge").val()
+                    },
+                    dataType: "JSON",
+                    success: function (res) {   //请求成功时，接受返回的数据
+                        console.log(res);
+                        console.log(res.status);
+                        console.log(res.data);
+                    }
+                })
+            })
+        }
+
+        function bindBtn3Event() {
+            $("#btn3").click(function () {   // 点击按钮执行
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "post",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: $("#form3").serialize(),
+                    dataType: "JSON",
+                    success: function (res) {   //请求成功时，接受返回的数据
+                        console.log(res);
+                        console.log(res.status);
+                        console.log(res.data);
+                    }
+                })
+            })
+        }
+
+        function bindBtnAddEvent() {
+            $("#btnAdd").click(function () {   // 点击按钮执行
+
+                $(".error-msg").empty();
+
+                $.ajax({
+                    url: '/task/add/',
+                    type: "post",
+                    headers: {
+                        "X-CSRFToken": csrftoken
+                    },
+                    data: $("#formAdd").serialize(),
+                    dataType: "JSON",
+                    success: function (res) {   //请求成功时，接受返回的数据
+                        if (res.status) {
+                            alert("添加成功");
+                            location.reload()
+                        } else {
+                            //console.log(res.error); //res.error 是字典类型
+                            $.each(res.error, function (name, data) {
+                                //console.log(name,data);
+                                $("#id_" + name).next().text(data[0]) //拼接字符串，django中modelform对象的字段的id默认为id_field,所以通过这个找到要放错误的位置，再加上错误内容
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
+    </script>
+{% endblock %}

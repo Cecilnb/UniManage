@@ -1,0 +1,77 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+    <div class="container">   <!--这样的话，内容就都放中间了-->
+        <div style="margin-bottom:10px">
+            <a class="btn btn-primary" href="/prettynum/add/">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                新建靓号
+            </a>
+
+            <a class="btn btn-primary" href="/user/model/form/add/">
+                <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                新建用户ModelForm
+            </a>
+
+            <div style="float:right;width:300px">
+                <form method="get">
+                    <div class="input-group">
+                        <input type="text" class="form-control" name="q" placeholder="Search for..."
+                               value="{{ search_data }}">
+                        <span class="input-group-btn">
+                        <button class="btn btn-default" type="submit">
+                            <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+                        </button>
+                        </span>
+                    </div><!-- /input-group -->
+                </form>
+            </div>
+        </div>
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-th-list" aria-hidden="true"></span>
+                靓号列表
+            </div>
+
+            <table class="table table-bordered">
+
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>号码</th>
+                    <th>价格</th>
+                    <th>级别</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for obj in queryset %}
+                    <tr>
+                        <td>{{ obj.id }}</td>
+                        <td>{{ obj.mobile }}</td>
+                        <td>{{ obj.price }}</td>
+                        <td>{{ obj.get_level_display }}</td>  <!--在数据库中存的是整型，表头展示的字符串-->
+                        <td>{{ obj.get_status_display }}</td>
+                        <td>
+                            <a class="btn btn-primary btn-xs" href="/prettynum/{{ obj.id }}/edit/">编辑</a>
+                            <a class="btn btn-danger btn-xs" href="/prettynum/{{ obj.id }}/delete/">删除</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="clearfix">
+            <ul class="pagination">
+                {{ page_string }}
+            </ul>
+        </div>
+
+
+    </div>
+{% endblock %}
