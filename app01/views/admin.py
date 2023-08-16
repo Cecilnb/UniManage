@@ -42,8 +42,13 @@ from app01.utils.bootstrap import BootStrapModelForm
 from app01.utils.encrypt import md5
 
 
-class AdminModelForm(BootStrapModelForm):
-    password = forms.CharField(widget=forms.PasswordInput(render_value=True))
+class AdminModelForm(forms.ModelForm):
+    username = forms.CharField(
+        widget=forms.TextInput(attrs={'class': 'in', 'placeholder': 'Username'})
+    )
+    password = forms.CharField(
+        widget=forms.PasswordInput(render_value=True, attrs={'class': 'in', 'placeholder': 'Password'})
+    )
     confirm_password = forms.CharField(label="确认密码",
                                        widget=forms.PasswordInput(render_value=True))
 
